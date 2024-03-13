@@ -15,4 +15,11 @@ func TestNewArgon2idHash(t *testing.T) {
 	assert.NotEmpty(t, wrapHash)
 
 	assert.True(t, argon2IDHash.CompareHashAndPassword(wrapHash, "supersecret"))
+
+	t.Log(wrapHash)
+
+	unwrap, err := argon2IDHash.UnwrapPassword(wrapHash)
+	assert.NoError(t, err)
+
+	assert.Equal(t, hash.Hash, unwrap.Hash)
 }

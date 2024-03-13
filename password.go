@@ -79,6 +79,11 @@ func (a *Argon2idHash) WrapPassword(data *HashSalt) string {
 	response.Write(data.Hash)
 	response.Write(data.Salt)
 
+	random := make([]byte, 4)
+	_, _ = rand.Read(random)
+
+	response.Write(random) // to add dummy data and try to avoid brute force
+
 	return base58.StdEncoding.EncodeToString(response.Bytes())
 }
 
@@ -90,7 +95,7 @@ func (a *Argon2idHash) UnwrapPassword(encodedData string) (*HashSalt, error) {
 	}
 
 	// Check if the decoded data has at least the length of hash and salt
-	if len(data) < int(a.keyLen) {
+	if len(data) < int(a.keyLen+a.saltLen) {
 		return nil, errors.New("invalid encoded data")
 	}
 
